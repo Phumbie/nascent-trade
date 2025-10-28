@@ -30,9 +30,8 @@ export const OrderBook: React.FC<OrderBookProps> = ({
           <span className="text-right">Quantity ({asset})</span>
         </div>
 
-        {/* Scrollable orderbook content */}
-        <div className="flex-1 overflow-y-auto min-h-0">
-          {/* Asks (reversed so best ask is closest to spread) */}
+        {/* Asks Section - Top scrollable area (Sell Orders) */}
+        <div className="flex-1 overflow-y-auto min-h-0 scrollbar-thin">
           <div className="space-y-0.5 py-2">
             {[...asks].reverse().map((ask, idx) => (
               <OrderBookRow
@@ -44,13 +43,15 @@ export const OrderBook: React.FC<OrderBookProps> = ({
               />
             ))}
           </div>
+        </div>
 
-          {/* Spread */}
-          <div className="py-2">
-            <SpreadIndicator spread={spread} spreadPercent={spreadPercent} />
-          </div>
+        {/* Spread - Fixed in middle */}
+        <div className="shrink-0 py-2 bg-surface border-y border-border">
+          <SpreadIndicator spread={spread} spreadPercent={spreadPercent} />
+        </div>
 
-          {/* Bids */}
+        {/* Bids Section - Bottom scrollable area (Buy Orders) */}
+        <div className="flex-1 overflow-y-auto min-h-0 scrollbar-thin">
           <div className="space-y-0.5 py-2">
             {bids.map((bid, idx) => (
               <OrderBookRow
