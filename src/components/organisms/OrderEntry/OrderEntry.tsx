@@ -68,8 +68,8 @@ export const OrderEntry: React.FC<OrderEntryProps> = ({
   };
 
   return (
-    <Card title="Place Order">
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <Card title="Place Order" className="h-[calc(100dvh-120px)] flex flex-col">
+      <form onSubmit={handleSubmit} className="space-y-4 flex-1 overflow-y-auto">
         <OrderTypeToggle value={orderType} onChange={setOrderType} />
 
         <SideToggle value={side} onChange={setSide} />
