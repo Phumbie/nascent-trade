@@ -10,7 +10,7 @@
 - [Tech Stack](#tech-stack)
 - [Getting Started](#getting-started)
 
-## ✨ Features
+## Features
 
 ### Core Requirements
 - **Order Book Visualization**: Real-time display of bids and asks for BTC and ETH
@@ -106,7 +106,7 @@ App.tsx → Sets prefillPrice & prefillSide
 OrderEntry → Auto-fills form & switches to LIMIT
 ```
 
-## 🎯 Key Technical Decisions
+##  Key Technical Decisions
 
 ### 1. Custom Hooks Over Context API
 **Decision**: Used custom hooks (`useOrderBook`, `useOrderEntry`, etc.) instead of React Context.
@@ -189,7 +189,7 @@ OrderEntry → Auto-fills form & switches to LIMIT
 - **Express.js** - Mock API server
 - **Create React App** - Build tooling
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 - Node.js 16+ and npm
@@ -228,6 +228,4 @@ npm run build         # Build for production
 - All orders are validated client-side before submission
 - Trade history persists during session (bonus feature)
 
----
 
-Built with ❤️ for cryptocurrency trading
