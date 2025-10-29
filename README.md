@@ -1,55 +1,236 @@
-# NASCENT TAKE HOME TEST
+# Cryptocurrency Trading Platform
 
-## Assignment
-Please thoroughly review the provided Assignment requirements PDF for the description.
+A professional Order Book Visualization and Order Entry UI for cryptocurrency trading, built with React, TypeScript, and Tailwind CSS.
 
-## Candidate Notes
-Please add any notes here.
+## 📋 Table of Contents
 
-## About the Template
+- [Features](#features)
+- [Project Architecture](#project-architecture)
+- [Data Flow](#data-flow)
+- [Key Technical Decisions](#key-technical-decisions)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## ✨ Features
 
-### Available Scripts
+### Core Requirements
+- **Order Book Visualization**: Real-time display of bids and asks for BTC and ETH
+- **Asset Selection**: Toggle between Bitcoin and Ethereum
+- **Order Entry Form**: Place limit orders with quantity validation
+- **Spread Indicator**: Visual display of bid-ask spread
 
-In the project directory, you can run:
+### Bonus Features
+- **Market Orders**: Support for market orders in addition to limit orders
+- **Trade History**: Display submitted trades with full details
+- **Click-to-Fill**: Click any price in the orderbook to pre-fill the order form
+- **Auto-Calculation**: Enter any 2 of (quantity, price, notional) and the 3rd is auto-calculated
+- **Mobile Responsive**: Slide-in sidebar for order entry on mobile devices
 
-#### `npm start`
+## 🏗️ Project Architecture
 
-Runs the app in the development mode along with the mock server\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-The mock server is running on [http://localhost:3001](http://localhost:3001).
+### Component Organization Principles
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+**Separation of Concerns:**
+- **UI Components** (`src/ui/`): Reusable primitives with no business logic
+- **Feature Components** (`src/components/`): Business-specific components that compose UI components
+- **Custom Hooks** (`src/hooks/`): Encapsulate stateful logic and side effects
+- **Services** (`src/services/`): Pure API communication functions
 
-#### `npm test`
+**Flat Structure Decision:**
+We moved away from atomic design (atoms/molecules/organisms) to a simpler flat structure in `components/`. This decision was made because:
+- The project size doesn't warrant the complexity of a 3-tier hierarchy
+- Easier to locate components when they're not nested
+- Better developer experience with shorter import paths
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Component Hierarchy
 
-#### `npm run build`
+```
+App.tsx
+├── AssetSelector (select BTC/ETH)
+├── OrderBook
+│   ├── OrderBookRow (x many)
+│   └── SpreadIndicator
+├── OrderEntry (desktop) / Sidebar (mobile)
+│   ├── OrderTypeToggle
+│   ├── SideToggle
+│   └── Input fields (quantity, price, notional)
+└── TradesList (shows submitted trades)
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 📊 Data Flow
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Order Book Data Flow
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```
+Server (Port 3001)
+    │
+    │ GET /orderbook/:asset
+    ▼
+api.ts → getOrderbook(asset)
+    │
+    ▼
+useOrderBook Hook → Processes & Polls (5s interval)
+    │
+    ▼
+OrderBook Component → Displays bids, asks, spread
+```
 
-#### `npm run eject`
+### Order Submission Flow
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```
+OrderEntry Form
+    │
+    │ onSubmit(orderData)
+    ▼
+useOrderEntry Hook → Validates & Manages State
+    │
+    │ POST /trade
+    ▼
+api.ts → sendTrade(order)
+    │
+    │ Server Response
+    ▼
+Server Validates → Returns { id, timestamp, ... }
+    │
+    ▼
+App.tsx → Shows Success Toast & Adds to Trade History
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Price Click Interaction
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```
+User clicks price in OrderBook
+    │
+    ▼
+App.tsx → Sets prefillPrice & prefillSide
+    │
+    ▼
+OrderEntry → Auto-fills form & switches to LIMIT
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## 🎯 Key Technical Decisions
 
-### Learn More
+### 1. Custom Hooks Over Context API
+**Decision**: Used custom hooks (`useOrderBook`, `useOrderEntry`, etc.) instead of React Context.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+**Rationale**:
+- Simpler for this use case - no prop drilling issues
+- Better code reuse - hooks can be composed
+- Easier to test and reason about
+- Context would add unnecessary complexity for component-level state
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 2. Enum Types for Order Side and Type
+**Decision**: Used TypeScript enums for `OrderSide` (BUY/SELL) and `OrderType` (LIMIT/MARKET).
+
+**Rationale**:
+- Type safety - prevents invalid values
+- Better IDE autocomplete
+- Self-documenting code
+- Easier refactoring
+
+### 3. Flat Component Structure
+**Decision**: Collapsed atomic design structure into flat `components/` folder.
+
+**Rationale**:
+- Project size doesn't warrant 3-tier hierarchy
+- Shorter import paths: `../Card` vs `../../molecules/Card`
+- Faster to locate components
+- UI components separated into `src/ui/` for clear distinction
+
+### 4. Auto-Calculation Hook
+**Decision**: Created dedicated `useAutoCalculation` hook for quantity/price/notional logic.
+
+**Rationale**:
+- Complex calculation logic (3-way dependencies)
+- Reusable across different forms
+- Testable in isolation
+- Clear separation of concerns
+
+### 5. Independent Scrolling Sections
+**Decision**: OrderBook split into 3 sections with independent scrolling (asks, spread, bids).
+
+**Rationale**:
+- Professional trading platform UX
+- Spread always visible (fixed in middle)
+- Better for large datasets
+- Matches industry-standard orderbook UI patterns
+
+### 6. Mobile Sidebar Pattern
+**Decision**: Used slide-in sidebar for mobile order entry instead of stacking.
+
+**Rationale**:
+- Better use of mobile screen space
+- Familiar mobile navigation pattern
+- Keeps orderbook visible context
+- Smooth animations for better UX
+
+### 7. Barrel Exports
+**Decision**: Used barrel exports (`index.ts` files) for cleaner imports.
+
+**Rationale**:
+- Cleaner imports: `import { Button } from './ui'` vs `'./ui/Button'`
+- Easier refactoring - change file location without breaking imports
+- Better encapsulation - control what's exported
+- Note: Intermediate folder `index.ts` files could be removed for even more simplicity
+
+### 8. Tailwind CSS Over CSS Modules
+**Decision**: Used Tailwind CSS for styling instead of CSS Modules or styled-components.
+
+**Rationale**:
+- Rapid development - no context switching
+- Utility-first approach fits component-based architecture
+- Consistent design system via config
+- Smaller bundle when properly purged
+- Custom dark theme for trading platform aesthetic
+
+## 🛠️ Tech Stack
+
+- **React 18.3** - UI library
+- **TypeScript 4.9** - Type safety
+- **Tailwind CSS 3.4** - Utility-first CSS framework
+- **Express.js** - Mock API server
+- **Create React App** - Build tooling
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 16+ and npm
+
+### Installation
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server (UI on :3000, API on :3001)
+npm start
+
+# Or run on custom port
+PORT=3002 npm run start:ui
+```
+
+The application will:
+- Start React dev server (default: http://localhost:3000)
+- Start Express API server (http://localhost:3001)
+- Proxy API calls from React app to backend
+
+### Project Scripts
+
+```bash
+npm start              # Run both UI and API concurrently
+npm run start:ui      # Run only React app
+npm run start:server  # Run only API server
+npm run build         # Build for production
+```
+
+## 📝 Development Notes
+
+- The orderbook polls every 5 seconds for fresh data
+- Click any price in the orderbook to pre-fill the order form
+- Market orders don't require a price field
+- All orders are validated client-side before submission
+- Trade history persists during session (bonus feature)
+
+---
+
+Built with ❤️ for cryptocurrency trading
