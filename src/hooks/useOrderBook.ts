@@ -34,12 +34,12 @@ export const useOrderBook = (asset: Asset) => {
 
 // Process raw API data into display format
 const processOrderBook = (data: OrderBookData): ProcessedOrderBook => {
-  const bids: OrderBookLevel[] = data.bids.slice(0, 20).map(([price, qty]) => ({
+  const bids: OrderBookLevel[] = data.bids.map(([price, qty]) => ({
     price: parseFloat(price),
     quantity: parseFloat(qty),
   }));
 
-  const asks: OrderBookLevel[] = data.asks.slice(0, 20).map(([price, qty]) => ({
+  const asks: OrderBookLevel[] = data.asks.map(([price, qty]) => ({
     price: parseFloat(price),
     quantity: parseFloat(qty),
   }));

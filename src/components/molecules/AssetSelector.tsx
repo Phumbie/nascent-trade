@@ -21,7 +21,7 @@ export const AssetSelector: React.FC<AssetSelectorProps> = ({
           className={`
             px-6 py-2 rounded-md font-medium transition-all
             ${value === asset
-              ? 'bg-primary text-background shadow-lg'
+              ? 'bg-primary text-white shadow-lg'
               : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'
             }
           `}

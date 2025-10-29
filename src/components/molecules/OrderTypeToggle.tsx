@@ -22,7 +22,7 @@ export const OrderTypeToggle: React.FC<OrderTypeToggleProps> = ({
           className={`
             px-4 py-2 rounded-lg font-medium transition-all text-sm
             ${value === type
-              ? 'bg-primary text-background'
+              ? 'bg-primary text-white'
               : 'bg-surface-hover text-text-secondary hover:text-text-primary border border-border'
             }
           `}

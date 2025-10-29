@@ -28,10 +28,13 @@ export const OrderEntry: React.FC<OrderEntryProps> = ({
 
   // Handle prefills from orderbook clicks
   useEffect(() => {
-    if (prefillPrice) {
+    if (prefillPrice !== undefined) {
       setPrice(prefillPrice.toString());
+      // Automatically switch to LIMIT order when clicking a price (only if currently on MARKET)
+      setOrderType(OrderType.LIMIT);
     }
-  }, [prefillPrice, setPrice]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prefillPrice]);
 
   useEffect(() => {
     if (prefillSide) {
@@ -68,8 +71,8 @@ export const OrderEntry: React.FC<OrderEntryProps> = ({
   };
 
   return (
-    <Card title="Place Order" className="h-[calc(100dvh-120px)] flex flex-col">
-      <form onSubmit={handleSubmit} className="space-y-4 flex-1 overflow-y-auto">
+    <Card title="Place Order">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <OrderTypeToggle value={orderType} onChange={setOrderType} />
 
         <SideToggle value={side} onChange={setSide} />

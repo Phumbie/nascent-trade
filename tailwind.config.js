@@ -29,8 +29,8 @@ module.exports = {
         
         // Accent
         primary: {
-          DEFAULT: '#fcd535',
-          hover: '#ffd95a',
+          DEFAULT: '#3b82f6',
+          hover: '#60a5fa',
         },
       },
       fontFamily: {

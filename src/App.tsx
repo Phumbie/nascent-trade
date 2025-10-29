@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { OrderBook, OrderEntry, AssetSelector, TradesList } from './components';
+import { OrderBook, OrderEntry, AssetSelector, TradesList, Button } from './components';
 import { useAssetSelection, useOrderBook, useOrderEntry, useTrades } from './hooks';
 import { OrderSide } from './types';
 
@@ -11,10 +11,13 @@ function App() {
 
   const [prefillPrice, setPrefillPrice] = useState<number | undefined>();
   const [prefillSide, setPrefillSide] = useState<OrderSide | undefined>();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const handlePriceClick = (price: number, side: OrderSide) => {
     setPrefillPrice(price);
     setPrefillSide(side);
+    // Auto-open sidebar on mobile when clicking a price
+    setIsSidebarOpen(true);
   };
 
   const handleOrderSubmit = async (order: any) => {
@@ -23,6 +26,8 @@ function App() {
       addTrade(result);
       setPrefillPrice(undefined);
       setPrefillSide(undefined);
+      // Close sidebar after successful order
+      setIsSidebarOpen(false);
     } catch (err) {
       // Error handled in hook
     }
@@ -50,6 +55,17 @@ function App() {
           </div>
         ) : (
           <>
+            {/* Mobile Place Order Button */}
+            <div className="lg:hidden mb-4">
+              <Button
+                variant="primary"
+                fullWidth
+                onClick={() => setIsSidebarOpen(true)}
+              >
+                Place Order
+              </Button>
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Order Book - 2 columns on large screens */}
               <div className="lg:col-span-2">
@@ -65,8 +81,8 @@ function App() {
                 )}
               </div>
 
-              {/* Order Entry - 1 column */}
-              <div>
+              {/* Order Entry - Hidden on mobile, visible on desktop */}
+              <div className="hidden lg:block">
                 <OrderEntry
                   selectedAsset={selectedAsset}
                   prefillPrice={prefillPrice}
@@ -86,6 +102,45 @@ function App() {
           </>
         )}
       </main>
+
+      {/* Mobile Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Mobile Sidebar */}
+      <div
+        className={`fixed top-0 right-0 h-full w-full sm:w-96 bg-background z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${
+          isSidebarOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        <div className="h-full flex flex-col">
+          {/* Sidebar Header */}
+          <div className="flex items-center justify-between p-4 border-b border-border bg-surface">
+            <h2 className="text-lg font-semibold text-text-primary">Place Order</h2>
+            <button
+              onClick={() => setIsSidebarOpen(false)}
+              className="text-text-secondary hover:text-text-primary text-2xl w-8 h-8 flex items-center justify-center"
+            >
+              ×
+            </button>
+          </div>
+
+          {/* Sidebar Content */}
+          <div className="flex-1 overflow-y-auto p-4">
+            <OrderEntry
+              selectedAsset={selectedAsset}
+              prefillPrice={prefillPrice}
+              prefillSide={prefillSide}
+              onSubmit={handleOrderSubmit}
+              submitting={submitting}
+            />
+          </div>
+        </div>
+      </div>
 
       {/* Toast Notifications */}
       {success && (
