@@ -2,7 +2,7 @@ import { Asset, OrderBookData, OrderFormData, SubmittedOrder } from '../types';
 
 // Use environment variable for API base URL, default to empty for local dev (uses proxy)
 // @ts-ignore - process.env is available at runtime in React apps
-const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://nascent-trade-production.up.railway.app';
 
 const API_BASE = `${API_BASE_URL}/orderbook`;
 const TRADE_API = `${API_BASE_URL}/trade`;
