@@ -1,7 +1,11 @@
 import { Asset, OrderBookData, OrderFormData, SubmittedOrder } from '../types';
 
-const API_BASE = '/orderbook';
-const TRADE_API = '/trade';
+// Use environment variable for API base URL, default to empty for local dev (uses proxy)
+// @ts-ignore - process.env is available at runtime in React apps
+const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
+const API_BASE = `${API_BASE_URL}/orderbook`;
+const TRADE_API = `${API_BASE_URL}/trade`;
 
 export const getOrderbook = async (asset: Asset): Promise<OrderBookData> => {
   const response = await fetch(`${API_BASE}/${asset}`);

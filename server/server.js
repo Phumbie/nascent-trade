@@ -7,6 +7,17 @@ const port = 3001
 const btcOrderbook = require('./data/btc_orderbook.json');
 const ethOrderbook = require('./data/eth_orderbook.json');
 
+// Add CORS support for cross-origin requests
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 app.use(express.json());
 
 /* Endpoint for simple hello world test */
