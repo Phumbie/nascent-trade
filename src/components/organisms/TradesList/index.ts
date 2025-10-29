@@ -1,2 +1,0 @@
-export { TradesList } from './TradesList';
-

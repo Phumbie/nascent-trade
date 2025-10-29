@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { OrderBook, OrderEntry, AssetSelector, TradesList, Button } from './components';
+import { OrderBook, OrderEntry, AssetSelector, TradesList } from './components';
+import { Button } from './ui';
 import { useAssetSelection, useOrderBook, useOrderEntry, useTrades } from './hooks';
 import { OrderSide } from './types';
 
