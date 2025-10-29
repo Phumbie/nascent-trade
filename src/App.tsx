@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { OrderBook, OrderEntry, AssetSelector, TradesList } from './components';
 import { Button } from './ui';
 import { useAssetSelection, useOrderBook, useOrderEntry, useTrades } from './hooks';
@@ -7,12 +7,23 @@ import { OrderSide } from './types';
 function App() {
   const { selectedAsset, setSelectedAsset } = useAssetSelection();
   const { orderBook, loading } = useOrderBook(selectedAsset);
-  const { submitOrder, submitting, error, success } = useOrderEntry();
+  const { submitOrder, submitting, error, success, clearMessages } = useOrderEntry();
   const { trades, addTrade, clearTrades } = useTrades();
 
   const [prefillPrice, setPrefillPrice] = useState<number | undefined>();
   const [prefillSide, setPrefillSide] = useState<OrderSide | undefined>();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Auto-dismiss toast notifications after 4 seconds
+  useEffect(() => {
+    if (success || error) {
+      const timer = setTimeout(() => {
+        clearMessages();
+      }, 4000); // 4 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [success, error, clearMessages]);
 
   const handlePriceClick = (price: number, side: OrderSide) => {
     setPrefillPrice(price);
@@ -145,13 +156,13 @@ function App() {
 
       {/* Toast Notifications */}
       {success && (
-        <div className="fixed bottom-4 right-4 bg-buy text-white px-6 py-3 rounded-lg shadow-xl animate-pulse">
+        <div className="fixed bottom-4 right-4 bg-buy text-white px-6 py-3 rounded-lg">
           <p className="font-semibold">✓ Order Placed Successfully!</p>
           <p className="text-sm opacity-90">ID: {success.id.slice(0, 8)}...</p>
         </div>
       )}
       {error && (
-        <div className="fixed bottom-4 right-4 bg-sell text-white px-6 py-3 rounded-lg shadow-xl animate-pulse">
+        <div className="fixed bottom-4 right-4 bg-sell text-white px-6 py-3 rounded-lg">
           <p className="font-semibold">✗ Error</p>
           <p className="text-sm opacity-90">{error}</p>
         </div>
