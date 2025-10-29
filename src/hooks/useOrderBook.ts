@@ -24,9 +24,6 @@ export const useOrderBook = (asset: Asset) => {
 
   useEffect(() => {
     fetchOrderBook();
-    // Poll every 5 seconds
-    const interval = setInterval(fetchOrderBook, 5000);
-    return () => clearInterval(interval);
   }, [fetchOrderBook]);
 
   return { orderBook, loading, error, refresh: fetchOrderBook };

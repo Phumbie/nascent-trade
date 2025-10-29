@@ -1,6 +1,5 @@
 # Cryptocurrency Trading Platform
 
-A professional Order Book Visualization and Order Entry UI for cryptocurrency trading, built with React, TypeScript, and Tailwind CSS.
 
 ## 📋 Table of Contents
 
@@ -26,7 +25,7 @@ A professional Order Book Visualization and Order Entry UI for cryptocurrency tr
 - **Auto-Calculation**: Enter any 2 of (quantity, price, notional) and the 3rd is auto-calculated
 - **Mobile Responsive**: Slide-in sidebar for order entry on mobile devices
 
-## 🏗️ Project Architecture
+## Project Architecture
 
 ### Component Organization Principles
 
@@ -37,8 +36,7 @@ A professional Order Book Visualization and Order Entry UI for cryptocurrency tr
 - **Services** (`src/services/`): Pure API communication functions
 
 **Flat Structure Decision:**
-We moved away from atomic design (atoms/molecules/organisms) to a simpler flat structure in `components/`. This decision was made because:
-- The project size doesn't warrant the complexity of a 3-tier hierarchy
+Simpler flat structure in `components/`. This decision was made because:
 - Easier to locate components when they're not nested
 - Better developer experience with shorter import paths
 
@@ -129,7 +127,7 @@ OrderEntry → Auto-fills form & switches to LIMIT
 - Easier refactoring
 
 ### 3. Flat Component Structure
-**Decision**: Collapsed atomic design structure into flat `components/` folder.
+**Decision**:  Flat `components/` folder.
 
 **Rationale**:
 - Project size doesn't warrant 3-tier hierarchy
@@ -225,7 +223,6 @@ npm run build         # Build for production
 
 ## 📝 Development Notes
 
-- The orderbook polls every 5 seconds for fresh data
 - Click any price in the orderbook to pre-fill the order form
 - Market orders don't require a price field
 - All orders are validated client-side before submission
