@@ -1,5 +1,5 @@
 import React from 'react';
-import { OrderSide } from '../../types';
+import { OrderSide } from '../types';
 
 interface OrderBookRowProps {
   price: number;

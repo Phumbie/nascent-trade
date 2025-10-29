@@ -1,5 +1,5 @@
 import React from 'react';
-import { Asset } from '../../types';
+import { Asset } from '../types';
 
 interface AssetSelectorProps {
   value: Asset;
