@@ -24,6 +24,13 @@ export const OrderEntry: React.FC<OrderEntryProps> = ({
   const [orderType, setOrderType] = useState<OrderType>(OrderType.LIMIT);
   const [side, setSide] = useState<OrderSide>(OrderSide.BUY);
   const { quantity, price, notional, setQuantity, setPrice, setNotional, reset } = useAutoCalculation();
+  
+  // Field-specific error states
+  const [errors, setErrors] = useState({
+    price: '',
+    quantity: '',
+    notional: ''
+  });
 
   // Handle prefills from orderbook clicks
   useEffect(() => {
@@ -41,8 +48,63 @@ export const OrderEntry: React.FC<OrderEntryProps> = ({
     }
   }, [prefillSide]);
 
+  // Validation functions
+  const validatePrice = (value: string): string => {
+    if (orderType === OrderType.MARKET) return '';
+    
+    const num = parseFloat(value);
+    if (!value) return 'Price is required';
+    if (isNaN(num)) return 'Price must be a valid number';
+    if (num <= 0) return 'Price must be greater than 0';
+    return '';
+  };
+
+  const validateQuantity = (value: string): string => {
+    const num = parseFloat(value);
+    if (!value) return 'Quantity is required';
+    if (isNaN(num)) return 'Quantity must be a valid number';
+    if (num <= 0) return 'Quantity must be greater than 0';
+    return '';
+  };
+
+  const validateNotional = (value: string): string => {
+    const num = parseFloat(value);
+    if (!value) return 'Notional is required';
+    if (isNaN(num)) return 'Notional must be a valid number';
+    if (num <= 0) return 'Notional must be greater than 0';
+    return '';
+  };
+
+  // Handle onBlur validation
+  const handlePriceBlur = () => {
+    setErrors(prev => ({ ...prev, price: validatePrice(price) }));
+  };
+
+  const handleQuantityBlur = () => {
+    setErrors(prev => ({ ...prev, quantity: validateQuantity(quantity) }));
+  };
+
+  const handleNotionalBlur = () => {
+    setErrors(prev => ({ ...prev, notional: validateNotional(notional) }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate all fields on submit
+    const priceError = validatePrice(price);
+    const quantityError = validateQuantity(quantity);
+    const notionalError = validateNotional(notional);
+
+    setErrors({
+      price: priceError,
+      quantity: quantityError,
+      notional: notionalError
+    });
+
+    if (priceError || quantityError || notionalError) {
+      return;
+    }
 
     const orderData = {
       asset: selectedAsset,
@@ -55,6 +117,7 @@ export const OrderEntry: React.FC<OrderEntryProps> = ({
 
     await onSubmit(orderData);
     reset();
+    setErrors({ price: '', quantity: '', notional: '' });
   };
 
   const isValid = () => {
@@ -84,6 +147,8 @@ export const OrderEntry: React.FC<OrderEntryProps> = ({
               step="0.01"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
+              onBlur={handlePriceBlur}
+              error={errors.price}
               rightAddon="USD"
               fullWidth
               placeholder="0.00"
@@ -97,6 +162,8 @@ export const OrderEntry: React.FC<OrderEntryProps> = ({
             step="0.00000001"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
+            onBlur={handleQuantityBlur}
+            error={errors.quantity}
             rightAddon={selectedAsset}
             fullWidth
             placeholder="0.00000000"
@@ -109,6 +176,8 @@ export const OrderEntry: React.FC<OrderEntryProps> = ({
             step="0.01"
             value={notional}
             onChange={(e) => setNotional(e.target.value)}
+            onBlur={handleNotionalBlur}
+            error={errors.notional}
             rightAddon="USD"
             fullWidth
             placeholder="0.00"
